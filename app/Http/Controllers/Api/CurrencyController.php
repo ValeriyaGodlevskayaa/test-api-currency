@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class CurrencyController extends Controller
 {
-    protected $apiCurrencyService;
+    protected ApiCurrencyService $apiCurrencyService;
 
     public function __construct(ApiCurrencyService $apiCurrencyService)
     {
@@ -20,6 +20,7 @@ class CurrencyController extends Controller
         $this->apiCurrencyService = $apiCurrencyService;
 
     }
+
     public function index()
     {
         return view('currency.index', ['currencies' => $this->listCurrency()]);
@@ -44,7 +45,7 @@ class CurrencyController extends Controller
     {
         $currentCurrency = $request->input('currentCurrency');
         $historyRates = $this->apiCurrencyService->getHistoryCurrency($request->input('period'), $currentCurrency);
-        if (isset($historyRates)){
+        if (isset($historyRates)) {
             ksort($historyRates);
         }
         return view('currency.index', [

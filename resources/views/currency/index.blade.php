@@ -3,6 +3,11 @@
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
+            @if ($errors->any())
+                @foreach ($errors->all() as $error)
+                    <div>{{$error}}</div>
+                @endforeach
+            @endif
             <div class="col-md-8">
                 <form class="form-group" method="POST" action="{{ route('convertCurrency') }}">
                     @csrf
@@ -10,7 +15,8 @@
                         <label for="currency">Select currency</label>
                         <select name="currency" class="form-control form-control-lg">
                             @foreach($currencies as $keyCurrency => $rate)
-                                <option @if(isset($currentCurrency) && $currentCurrency === $keyCurrency) selected @endif value="{{ $keyCurrency }}">{{ $keyCurrency }}</option>
+                                <option @if(isset($currentCurrency) && $currentCurrency === $keyCurrency) selected
+                                        @endif value="{{ $keyCurrency }}">{{ $keyCurrency }}</option>
                             @endforeach
                         </select>
                         <label>Rate</label>
@@ -42,14 +48,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                    @if(isset($historyRates))
-                        @foreach($historyRates as $date => $rate)
-                            <tr>
-                                <td>{{ $date }}</td>
-                                <td>{{ $rate[$currentCurrency] }}</td>
-                            </tr>
-                        @endforeach
-                    @endif
+                @if(isset($historyRates))
+                    @foreach($historyRates as $date => $rate)
+                        <tr>
+                            <td>{{ $date }}</td>
+                            <td>{{ $rate[$currentCurrency] }}</td>
+                        </tr>
+                    @endforeach
+                @endif
                 </tbody>
             </table>
         </div>

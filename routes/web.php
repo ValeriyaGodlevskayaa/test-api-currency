@@ -14,9 +14,11 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/home', 'HomeController@index')->name('home');
 
+Route::get('/', 'Api\CurrencyController@index');
+
 Auth::routes();
 
-Route::get('/', 'Api\CurrencyController@index')->name('currency');
+Route::get('/currency', 'Api\CurrencyController@index')->name('currency');
 Route::post('/currency', 'Api\CurrencyController@convertCurrency')->name('convertCurrency');
 Route::post('/currencyHistory', 'Api\CurrencyController@currencyHistory')->name('currencyHistory');
 
