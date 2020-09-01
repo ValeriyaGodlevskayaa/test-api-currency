@@ -24,8 +24,7 @@ class CurrencyRequest extends FormRequest
     public function rules()
     {
         return [
-            'fromCurrency' => 'string|max:4',
-            'toCurrency' => 'string|max:4',
+            'currency' => 'string|max:4',
         ];
     }
 }

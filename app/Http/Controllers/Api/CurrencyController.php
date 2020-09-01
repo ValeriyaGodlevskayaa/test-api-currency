@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CurrencyRequest;
 use App\Services\API\ApiCurrencyService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 
 class CurrencyController extends Controller
 {
@@ -23,18 +22,37 @@ class CurrencyController extends Controller
     }
     public function index()
     {
-        $listCurrency = $this->apiCurrencyService->listCurency();
-        return view('currency.index', ['currencies' => (array)$listCurrency]);
+        return view('currency.index', ['currencies' => $this->listCurrency()]);
     }
 
     public function convertCurrency(CurrencyRequest $request)
     {
         $params = $request->all();
-        $currencyApi = $this->apiCurrencyService->getCurrentCurrency($params['fromCurrency'], $params['toCurrency']);
-        var_dump($currencyApi);die();
+        $currencyApi = (array)$this->apiCurrencyService->getCurrentCurrency($params['currency']);
+        return view('currency.index', [
+            'currentCurrency' => array_key_first($currencyApi),
+            'currentRate' => array_shift($currencyApi),
+            'currencies' => $this->listCurrency()]);
     }
 
+    public function listCurrency()
+    {
+        return (array)$this->apiCurrencyService->listCurency();
+    }
 
+    public function currencyHistory(Request $request)
+    {
+        $currentCurrency = $request->input('currentCurrency');
+        $historyRates = $this->apiCurrencyService->getHistoryCurrency($request->input('period'), $currentCurrency);
+        if (isset($historyRates)){
+            ksort($historyRates);
+        }
+        return view('currency.index', [
+            'historyRates' => $historyRates,
+            'currencies' => $this->listCurrency(),
+            'currentCurrency' => $currentCurrency
+        ]);
+    }
 
 
 }
