@@ -8,35 +8,29 @@ use Illuminate\Support\Facades\Http;
 
 class ApiCurrencyService
 {
-    const URL_API_CURRENCIES = 'http://data.fixer.io/api/';
-    const URL_API_HISTORY = 'https://api.exchangeratesapi.io/history';
-    const KEY = '9e3f61b200994b0eae1926b978a314bc';
+    const URL_API = 'https://api.exchangeratesapi.io/';
 
-    private static function connect(string $action, string $symbols = ''): object
+    private static function connectApi(string $action, string $symbol, string $startDate = '', string $endDate = ''): object
     {
-        return Http::get(self::URL_API_CURRENCIES . $action . '?access_key=' . self::KEY . '&symbols=' . $symbols);
+        return Http::get(self::URL_API . $action, ['start_at' => $startDate, 'end_at' => $endDate, 'symbols' => $symbol]);
     }
 
-    private static function connectApiHistory(string $symbol, string $startDate, string $endDate): object
+    public function getCurrencies(): array
     {
-        return Http::get(self::URL_API_HISTORY, ['start_at' => $startDate, 'end_at' => $endDate, 'symbols' => $symbol]);
+        $request = self::connectApi('latest', '');
+        return array_keys(json_decode($request->body(), true)['rates']);
     }
 
-    public function listCurency(): object
+    public function getRateCurrency(string $currency)
     {
-        return json_decode(self::connect('symbols')->body())->symbols;
-    }
-
-    public function getCurrentCurrency(string $currency = 'USD'): object
-    {
-        $request = self::connect('latest', $currency)->body();
-        return json_decode($request)->rates;
+        $request = self::connectApi('latest', $currency)->body();
+        return json_decode($request, true)['rates'];
     }
 
     public function getHistoryCurrency(string $period, string $symbol): ?array
     {
         $date = $this->getDateForCurrency($period);
-        $request = self::connectApiHistory($symbol, $date, Carbon::now()->toDateString());
+        $request = self::connectApi('history', $symbol, $date, Carbon::now()->toDateString());
         $result = null;
         if ($request->successful()) {
             $result = json_decode($request->body(), true)['rates'];

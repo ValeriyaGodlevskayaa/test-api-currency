@@ -14,9 +14,9 @@
                     <div class="form-group">
                         <label for="currency">Select currency</label>
                         <select name="currency" class="form-control form-control-lg">
-                            @foreach($currencies as $keyCurrency => $rate)
-                                <option @if(isset($currentCurrency) && $currentCurrency === $keyCurrency) selected
-                                        @endif value="{{ $keyCurrency }}">{{ $keyCurrency }}</option>
+                            @foreach($currencies as $keyCurrency => $symbol)
+                                <option @if(isset($currentCurrency) && $currentCurrency === $symbol) selected
+                                        @endif value="{{ $symbol }}">{{ $symbol }}</option>
                             @endforeach
                         </select>
                         <label>Rate</label>

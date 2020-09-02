@@ -29,16 +29,18 @@ class CurrencyController extends Controller
     public function convertCurrency(CurrencyRequest $request)
     {
         $params = $request->all();
-        $currencyApi = (array)$this->apiCurrencyService->getCurrentCurrency($params['currency']);
+        $this->apiCurrencyService->getRateCurrency($request->input('currency'));
+        $currencyApi = $this->apiCurrencyService->getRateCurrency($params['currency']);
         return view('currency.index', [
             'currentCurrency' => array_key_first($currencyApi),
             'currentRate' => array_shift($currencyApi),
             'currencies' => $this->listCurrency()]);
+
     }
 
     public function listCurrency()
     {
-        return (array)$this->apiCurrencyService->listCurency();
+        return $this->apiCurrencyService->getCurrencies();
     }
 
     public function currencyHistory(Request $request)
