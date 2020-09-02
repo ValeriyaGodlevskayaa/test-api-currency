@@ -11,7 +11,7 @@ class ApiCurrencyService
 {
     const URL_API = 'https://api.exchangeratesapi.io/';
 
-    private static function connectApi(string $action, string $symbol, string $startDate = '', string $endDate = ''): Response
+    protected static function connectApi(string $action, string $symbol, string $startDate = '', string $endDate = ''): Response
     {
         return Http::get(self::URL_API . $action, ['start_at' => $startDate, 'end_at' => $endDate, 'symbols' => $symbol]);
     }
@@ -47,7 +47,7 @@ class ApiCurrencyService
         return $response['rates'] ?? null;
     }
 
-    private function getDateForCurrency(string $period): string
+    protected function getDateForCurrency(string $period): string
     {
         $todayDate = Carbon::now();
         switch ($period) {
