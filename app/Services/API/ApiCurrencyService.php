@@ -4,33 +4,36 @@
 namespace App\Services\API;
 
 use Carbon\Carbon;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 class ApiCurrencyService
 {
     const URL_API = 'https://api.exchangeratesapi.io/';
 
-    private static function connectApi(string $action, string $symbol, string $startDate = '', string $endDate = ''): object
+    private static function connectApi(string $action, string $symbol, string $startDate = '', string $endDate = ''): Response
     {
         return Http::get(self::URL_API . $action, ['start_at' => $startDate, 'end_at' => $endDate, 'symbols' => $symbol]);
     }
 
-    public function getCurrencies(): array
+    public function getCurrencies(): ?array
     {
         $request = self::connectApi('latest', '');
         if ($request->failed()){
             throw new \Exception('Problem with currency api. Not get currencies.');
         }
-        return array_keys(json_decode($request->body(), true)['rates']);
+        $response = json_decode($request->body(), true);
+        return $response['rates'] ? array_keys($response['rates']) : null;
     }
 
-    public function getRateCurrency(string $currency)
+    public function getRateCurrency(string $currency): ?array
     {
         $request = self::connectApi('latest', $currency);
         if ($request->failed()){
             throw new \Exception('Problem with currency api. Not get rate for current currency.');
         }
-        return json_decode($request->body(), true)['rates'];
+        $response = json_decode($request->body(), true);
+        return $response['rates'] ?? null;
     }
 
     public function getHistoryCurrency(string $period, string $symbol): ?array
@@ -40,7 +43,8 @@ class ApiCurrencyService
         if ($request->failed()){
             throw new \Exception('Problem with currency api. Not get history for currency.');
         }
-        return json_decode($request->body(), true)['rates'];
+        $response = json_decode($request->body(), true);
+        return $response['rates'] ?? null;
     }
 
     private function getDateForCurrency(string $period): string
