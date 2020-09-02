@@ -18,24 +18,29 @@ class ApiCurrencyService
     public function getCurrencies(): array
     {
         $request = self::connectApi('latest', '');
+        if ($request->failed()){
+            throw new \Exception('Problem with currency api. Not get currencies.');
+        }
         return array_keys(json_decode($request->body(), true)['rates']);
     }
 
     public function getRateCurrency(string $currency)
     {
-        $request = self::connectApi('latest', $currency)->body();
-        return json_decode($request, true)['rates'];
+        $request = self::connectApi('latest', $currency);
+        if ($request->failed()){
+            throw new \Exception('Problem with currency api. Not get rate for current currency.');
+        }
+        return json_decode($request->body(), true)['rates'];
     }
 
     public function getHistoryCurrency(string $period, string $symbol): ?array
     {
         $date = $this->getDateForCurrency($period);
         $request = self::connectApi('history', $symbol, $date, Carbon::now()->toDateString());
-        $result = null;
-        if ($request->successful()) {
-            $result = json_decode($request->body(), true)['rates'];
+        if ($request->failed()){
+            throw new \Exception('Problem with currency api. Not get history for currency.');
         }
-        return $result;
+        return json_decode($request->body(), true)['rates'];
     }
 
     private function getDateForCurrency(string $period): string
