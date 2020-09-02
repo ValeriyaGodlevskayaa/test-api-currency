@@ -11,7 +11,7 @@ class ApiCurrencyService
 {
     const URL_API = 'https://api.exchangeratesapi.io/';
 
-    protected static function connectApi(string $action, string $symbol, string $startDate = '', string $endDate = ''): Response
+    public static function connectApi(string $action, string $symbol, string $startDate = '', string $endDate = ''): Response
     {
         return Http::get(self::URL_API . $action, ['start_at' => $startDate, 'end_at' => $endDate, 'symbols' => $symbol]);
     }
